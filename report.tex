@@ -1,0 +1,115 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage[german]{babel}
+\usepackage{amssymb}
+\usepackage{amsxtra}
+\usepackage{listings}
+\usepackage{graphics}
+
+\newcommand{\refchapter}[1]{Kapitel~\ref{#1}}
+\newcommand{\refsec}[1]{Sektion~\ref{#1}}
+\newcommand{\refeqn}[1]{Gleichung~(\ref{#1})}
+\newcommand{\reffig}[1]{Abbildung~\ref{#1}}
+
+\title{
+{\bf \scriptsize RHEINISCH-WESTF\"ALISCHE TECHNISCHE HOCHSCHULE AACHEN \\
+Neuroinspired Computing (Prof. Dr. Abigail Morrison)} \vspace{2cm} \\
+Deterministic RNNs \\
+{\large Seminar Thesis} }
+\author{
+Marco Bischoff (Matr.-Nr. 370222)
+}
+
+\begin{document}
+
+\lstloadlanguages{[ISO]C++}
+\lstset{basicstyle=\small, numbers=left, numberstyle=\footnotesize,
+  stepnumber=1, numbersep=5pt, breaklines=true, escapeinside={/*@}{@*/}}
+
+
+\pagestyle{headings}
+
+\maketitle
+\newpage
+
+\tableofcontents
+\newpage
+
+
+
+\section{Introduction}
+\label{ch:1}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus. Suspendisse lectus
+tortor, dignissim sit amet, adipiscing nec, ultricies sed, dolor. Cras elementum ultrices
+diam. Maecenas ligula massa, varius a, semper congue, euismod non, mi. Proin porttitor,
+orci nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl sit amet erat.
+Duis semper. Duis arcu massa, scelerisque vitae, consequat in, pretium a, enim.
+Pellentesque congue. Ut in risus volutpat libero pharetra tempor. Cras vestibulum bibendum
+augue. Praesent egestas leo in pede. Praesent blandit odio eu enim. Pellentesque sed dui
+ut augue blandit sodales. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices
+posuere cubilia Curae; Aliquam nibh. Mauris ac mauris sed pede pellentesque fermentum.
+Maecenas adipiscing ante non diam sodales hendrerit.
+
+
+
+\section{Recurrent Neural Networks}
+\label{ch:2}
+
+\subsection{Backpropagation Through Time}
+\label{sec:2.0}
+
+\subsection{Problems with the Training of RNNs}
+\label{sec:2.1}
+
+
+
+\section{Long Short-Term Memory}
+\label{ch:3}
+
+\subsection{Theoetische Resultate}
+\label{sec:3.1}
+
+\subsection{Implementierung}
+\label{sec:3.2}
+
+\subsection{Anwendung}
+\label{sec:3.3}
+
+
+
+\section{Conclusion}
+\label{ch:4}
+
+\subsection{Zusammenfassung}
+\label{sec:4.1}
+
+\subsection{Diskussion}
+\label{sec:4.2}
+
+\subsection{Ausblick}
+\label{sec:4.3}
+
+Test citation \cite{Ries1522Rad}.
+
+
+
+\nocite{}
+\bibliographystyle{plain}
+\bibliography{report}
+\newpage
+
+
+
+\appendix
+
+\section{Benutzerdokumentation}
+\label{app1}
+
+{\em wohlstrukturierte und gut lesbare Dokumentation der entwickelten Software aus Nutzersicht (falls zutreffend)}
+
+
+
+\end{document}
+
