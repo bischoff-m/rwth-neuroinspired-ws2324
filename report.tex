@@ -6,6 +6,7 @@
 \usepackage{amsxtra}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage[labelfont=bf]{caption}
 
 % TODO
 % - Add references
@@ -124,7 +125,7 @@ sequences and lists, making them a natural architecture for processing data of t
   \caption{Ways of applying RNNs to different types of data. Both the input and output can
     be a fixed-size vector or a sequence of vectors. If both are sequences, the input and
     output vectors can either be regarded as pairs or as unrelated sequences of different
-    lengths. \cite{UnreasonableEffectivenessRecurrent}}
+    lengths. \cite{karpathyUnreasonableEffectivenessRecurrent}}
   \label{fig:rnn-application-types}
 \end{figure}
 
@@ -318,7 +319,7 @@ their applications and variants.
   \caption{The repeating module of an LSTM network. Each yellow box represents a neural
     network layer with its activation function and the pink circles represent pointwise
     operations. The lines merging denote concatenation, while a line forking denotes its
-    content being copied. The output is denoted by $h_t$.}
+    content being copied. The output is denoted by $h_t$. \cite{olahUnderstandingLSTM}}
   \label{fig:lstm}
 \end{figure}
 
@@ -397,23 +398,43 @@ network.
 \label{sec:3.1}
 
 LSTMs have been the subject of extensive research, leading to the development of several
-variants that aim to improve their performance and address specific challenges. One
-popular variant, introduced by Gers and Schmidhuber in 2000
-\cite{gersLearningForgetContinual2000}, adds peephole connections to the gates, allowing
-them to look at the cell state. This allows the gates to take into account the current
-state of the cell when making decisions, enabling the network to better control the flow
-of information.
+variants that aim to improve their performance and address specific challenges
+\cite{greffLSTMSearchSpace2017}. One popular variant, introduced by Gers and Schmidhuber
+in 2000 \cite{gersRecurrentNetsTime2000}, adds peephole connections to the architecture
+of the LSTM. These connections allow the cell to control the gates more precisely, making
+it easier for the network to learn precise timings. Additionally, the output activation
+function is omitted, as there is no evidence that it is essential for solving the problems
+that LSTMs have been tested on so far.
 
-Another variation is to use coupled forget and input gates, which allows the network to
-decide what to forget and what to add new information to in a single step. This can
-simplify the operation of the network and make it easier to learn long-term dependencies.
+% Variant: Dynamic Cortex Memory
+% TODO: This is copy paste from the abstract
+Another variant, called Dynamic Cortex Memory (DCM), was introduced by Otte et al. in 2014
+\cite{otte2014dynamic}. The DCM is an extension of the LSTM model that enhances the inner
+interplay of the gates and the error carousel due to several new and trainable
+connections. These connections enable a direct signal transfer from the gates to one
+another, allowing the network to converge faster during training with backpropagation
+through time (BPTT) than LSTM under the same training conditions. Furthermore, DCMs yield
+better generalization results than LSTMs, as shown for different supervised problem
+scenarios, including storing precise values, adding, and learning a context-sensitive
+grammar.
 
-Additionally, there are variants of LSTMs that use different activation functions, such as
-the Gated Recurrent Unit (GRU) \cite{choLearningPhraseRepresentations2014}, which uses a
-simpler structure with fewer gates and has been shown to perform well on a wide range of
-tasks. These variants demonstrate the flexibility of LSTMs and their ability to be adapted
-to different applications and challenges.
+% Variant: Gated Recurrent Unit
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{LSTM3-var-GRU.png}
+  \caption{The structure of a Gated Recurrent Unit (GRU) network. \cite{olahUnderstandingLSTM}}
+  \label{fig:gru}
+\end{figure}
+One of the most well-known variants of the LSTM architecture is the Gated Recurrent Unit
+(GRU), which was proposed by Cho et al. in 2014
+\cite{choLearningPhraseRepresentations2014}. The GRU simplifies the LSTM architecture by
+removing the output gate and the cell state, and combining the input and forget gates into
+a single update gate. This reduces the number of parameters in the network and makes it
+easier to train. The internal structure of a GRU network is shown in \reffig{fig:gru}.
+While the GRU has been shown to perform comparably to the LSTM on many tasks, it has the
+advantage of being simpler and more efficient, making it a popular choice for many
+applications.
 
 
 
