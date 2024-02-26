@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\usepackage[margin=1.5in]{geometry}
+\usepackage[margin=1.4in]{geometry}
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb}
@@ -9,15 +9,6 @@
 \usepackage{graphicx}
 \usepackage[labelfont=bf]{caption}
 \usepackage{cite}
-
-% TODO
-% - Add references
-% - Replace repeated text like "This allows the network ..."
-% - Shorten descriptions of figures
-% - Check that there are no single-line paragraphs
-% - Check formulas for correctness
-% https://www.scribbr.com/paraphrasing-tool/
-% https://quillbot.com/?gspk=cmljaGFyZG1lZXV3c2VuNDkyMQ&gsxid=ZdcTN1uLPa5o&pscd=try.quillbot.com
 
 \graphicspath{ {figures/} }
 
@@ -61,7 +52,7 @@ as language modelling \cite{merity2017regularizing}, machine translation
 \cite{choLearningPhraseRepresentations2014}, and speech recognition
 \cite{graves2013speech}. This paper explores the architecture and operation of RNNs, with
 a particular focus on Long Short-Term Memory networks. These networks are designed to
-learn long-term dependencies more effectively than standard RNNs. We also discuss the
+learn long-term dependencies more effectively than standard RNNs. We also introduce the
 Neural Turing Machine, which is a type of recurrent neural network that is augmented with
 an external memory bank.
 
@@ -91,15 +82,6 @@ real-world datasets. To overcome these limitations, we turn to Recurrent Neural 
 \section{Recurrent Neural Networks}
 \label{ch:2}
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.9\textwidth]{RNN Unrolled.drawio.png}
-  \caption{A recurrent neural network unrolled into a sequence of layers. The input
-    sequence $x_0, x_1, \ldots, x_t$ is shown in blue, the network layer in green and the
-    output sequence $y_0, y_1, \ldots, y_t$ in purple.}
-  \label{fig:rnn-unrolled}
-\end{figure}
-
 Recurrent Neural Networks (RNNs) are a type of neural network specifically designed to
 handle sequential data by maintaining an internal state. Unlike feedforward neural
 networks, which process the entire input at once, RNNs process the input elements one at a
@@ -114,19 +96,18 @@ sequences of arbitrary length can be processed, as shown in \reffig{fig:rnn-unro
 This unrolling shows that RNNs are closely related to sequences and lists, making them a
 useful architecture for processing data of this form.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{RNN Unrolled.drawio.png}
+  \caption{A recurrent neural network unrolled into a sequence of layers. The input
+    sequence $x_0, x_1, \ldots, x_t$ is shown in blue, the network layer in green and the
+    output sequence $y_0, y_1, \ldots, y_t$ in purple.}
+  \label{fig:rnn-unrolled}
+\end{figure}
+
 
 \subsection{Categories of Applications}
 \label{sec:2.0}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.9\textwidth]{Karpathy application types.jpeg}
-  \caption{Ways of applying RNNs to different types of data. Both the input and output can
-    be a fixed-size vector or a sequence of vectors. If both are sequences, the input and
-    output vectors can either be regarded as pairs or as unrelated sequences of different
-    lengths. \cite{karpathyUnreasonableEffectivenessRecurrent}}
-  \label{fig:rnn-application-types}
-\end{figure}
 
 The applications of RNNs can be categorized based on the length of the input and output
 sequences and the relationship between them, as shown in
@@ -143,25 +124,19 @@ video classification generates the output simultaneously with the input, making 
 possible for the network to use the previous frames as context. This demonstrates the
 flexibility of RNNs in handling a wide range of tasks involving sequential data.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Karpathy application types.jpeg}
+  \caption{Ways of applying RNNs to different types of data. Both the input and output can
+    be a fixed-size vector or a sequence of vectors. If both are sequences, the input and
+    output vectors can either be regarded as pairs or as unrelated sequences of different
+    lengths. \cite{karpathyUnreasonableEffectivenessRecurrent}}
+  \label{fig:rnn-application-types}
+\end{figure}
+
 
 \subsection{Internal Structure}
 \label{sec:2.1}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.9\textwidth]{Block Diagram Feedforward.drawio.png}
-  \caption{The internal structure of a feedforward neural network with a single layer (in
-    green) and an example for output processing.}
-  \label{fig:internal-feedforward}
-\end{figure}
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.9\textwidth]{Block Diagram RNN.drawio.png}
-  \caption{The internal structure of a recurrent neural network with a single layer (in
-    green) and an example for output processing.}
-  \label{fig:internal-rnn}
-\end{figure}
 
 To understand the structure of an RNN, we compare a single layer feedforward NN with a
 single layer RNN. As shown in \reffig{fig:internal-feedforward}, a feedforward NN
@@ -175,11 +150,28 @@ of zeros. However, it can also be learned during the training process, which can
 the network's performance in some cases
 \cite{sutskeverImportanceInitializationMomentum2013}.
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Block Diagram Feedforward.drawio.png}
+  \caption{The internal structure of a feedforward neural network with a single layer (in
+    green) and an example for output processing.}
+  \label{fig:internal-feedforward}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{Block Diagram RNN.drawio.png}
+  \caption{The structure of a recurrent neural network. The operation $(W_x \cdot x_t +
+      b_x) + (W_h \cdot h_{t-1} + b_h)$ is shown explicitly, but it is equivalent to $W
+      \cdot [h_{t-1}, x_t] + b$.}
+  \label{fig:internal-rnn}
+\end{figure}
+
 
 \subsection{Backpropagation}
 \label{sec:2.2}
 
-RNNs are usually trained using the backpropagation through time (BPTT) algorithm, an
+RNNs are trained using the backpropagation through time (BPTT) algorithm, an
 extension of the backpropagation algorithm for feedforward neural networks. As an example,
 consider a single layer feedforward NN, like the green box in
 \reffig{fig:internal-feedforward}. Let
@@ -228,9 +220,10 @@ problems such as vanishing or exploding gradients, which can make training diffi
 \label{sec:2.3}
 
 One of the key challenges in training RNNs is the problem of long-term dependencies. To
-illustrate this, consider a simplified RNN that takes an input sequence $x_0, x_1, \ldots,
-  x_n$ and produces a sequence of outputs/hidden states $h_0, h_1, \ldots, h_n$. It is
-defined by the function $F$ for each time step $t \in \{0, 1, \ldots, n\}$:
+illustrate this, consider a simplified RNN \cite{pascanuDifficultyTrainingRecurrent2013}
+that takes an input sequence $x_0, x_1, \ldots, x_n$ and produces a sequence of
+outputs/hidden states $h_0, h_1, \ldots, h_n$. It is defined by the function $F$ for each
+time step $t \in \{0, 1, \ldots, n\}$:
 \begin{equation}
   h_t = F(h_{t-1}, x_t) = W_h \tanh{h_{t-1}} + W_x x_t + b
 \end{equation}
@@ -254,7 +247,7 @@ as:
    & + \ldots \nonumber
 \end{align}
 With \refeqn{eq:gradient-hidden-state} and \refeqn{eq:gradient-sum}, we can see that the
-gradient for time step $t$ is predominantly influenced by $W_h^{n-t+1}$. If the largest
+gradient for time step $t$ is predominantly influenced by $W_h^t$. If the largest
 singular value of $W_h$ is less than 1, the gradient will vanish as $t$ increases. If it
 is greater than 1, the gradient will explode
 \cite{pascanuDifficultyTrainingRecurrent2013}. This makes it difficult for the network to
@@ -286,7 +279,7 @@ the problem of vanishing and exploding gradients in RNNs.
 
 
 
-\section{Long Short-Term Memory Networks}
+\section{Long Short-Term Memory}
 \label{ch:3}
 
 Long Short-Term Memory (LSTM) networks are a special type of RNN designed to learn
@@ -405,7 +398,7 @@ storage, addition, and context-sensitive grammar learning.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.9\textwidth]{LSTM3-var-GRU.png}
-  \caption{The structure of a Gated Recurrent Unit (GRU) network. \cite{olahUnderstandingLSTM}}
+  \caption{The structure of a Gated Recurrent Unit. \cite{olahUnderstandingLSTM}}
   \label{fig:gru}
 \end{figure}
 One of the best known variants of the LSTM architecture is the Gated Recurrent Unit (GRU),
@@ -432,38 +425,44 @@ designed to be fully differentiable and can be trained using backpropagation and
 gradient-based optimisation algorithms.
 
 The approach is inspired by the structure and operation of a Turing machine, which is a
-theoretical model of a computer that can read from and write to an infinite tape of
-memory. A computer program uses three basic mechanisms: elementary operations (such as
-arithmetic), logical flow control (branching), and external memory that can be written to
-and read from during computation \cite{von_neumann_first_1945}. In human cognition, the
-process that most closely resembles algorithmic operation is known as working memory,
-which is understood as the capacity for short-term storage of information and its
-rule-based manipulation \cite{baddeley_memory_2009}.
+theoretical model of a computer that has access to an infinite tape of memory. A computer
+program uses three basic mechanisms: elementary operations (such as arithmetic), logical
+flow control (branching), and external memory that can be written to and read from during
+computation \cite{von_neumann_first_1945}. In human cognition, the process that most
+closely resembles algorithmic operation is known as working memory, which is understood as
+the capacity for short-term storage of information and its rule-based manipulation
+\cite{baddeley_memory_2009}.
 
 
 \subsection{Architecture}
 \label{sec:4.0}
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.7\textwidth]{NTM Structure.png}
-  \caption{The architecture of a Neural Turing Machine.}
-  \label{fig:ntm-structure}
-\end{figure}
-
 The architecture of an NTM, as shown in \reffig{fig:ntm-structure}, consists of two main
 components: a controller and a memory bank. The controller is an LSTM, which is
 responsible for processing the input data and interacting with the memory bank. The memory
 bank for time step $t$ is a matrix $\textbf{M}_t$ of size $N \times M$, where $N$ is the
-number of memory locations and $M$ is the size of each memory location. The memory bank
-can be read from and written to by the controller. It interacts with the memory bank using
-read heads and write heads, which are responsible for reading and writing information from
-and to the memory bank. They use an attention mechanism to select the memory locations,
-allowing the network to focus on specific parts of the memory.
+number of memory locations and $M$ is the size of each memory location. The controller
+interacts with the memory bank using read heads and write heads. These use an attention
+mechanism to select the memory locations, allowing the network to focus on specific parts
+of the memory.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.6\textwidth]{NTM Structure.png}
+  \caption{The architecture of a Neural Turing Machine.}
+  \label{fig:ntm-structure}
+\end{figure}
 
 
 \subsection{Addressing Mechanism}
 \label{sec:4.1}
+
+The addressing mechanism of an NTM is responsible for selecting the memory locations to
+read from and write to. It combines both content-based and location-based addressing and
+consists of four main steps: content addressing, interpolation, convolutional shift and
+sharpening, as shown in \reffig{fig:ntm-addressing}. The addressing mechanism is performed
+at each time step, providing a dynamic and flexible way for the controller to interact
+with the memory bank.
 
 \begin{figure}[htbp]
   \centering
@@ -472,13 +471,6 @@ allowing the network to focus on specific parts of the memory.
     \cite{gravesNeuralTuringMachines2014}}
   \label{fig:ntm-addressing}
 \end{figure}
-
-The addressing mechanism of an NTM is responsible for selecting the memory locations to
-read from and write to. It combines both content-based and location-based addressing and
-consists of four main steps: content addressing, interpolation, convolutional shift and
-sharpening, as shown in \reffig{fig:ntm-addressing}. The addressing mechanism is performed
-at each time step, providing a dynamic and flexible way for the controller to interact
-with the memory bank.
 
 
 \subsubsection{Content Addressing}
@@ -491,7 +483,7 @@ vector is used to calculate the similarity between the key and each memory locat
 the cosine similarity measure $K[\cdot, \cdot]$. The parameter $\beta_t$ amplifies the
 precision of the attention weights, enforcing high sparsity in the weights.
 \begin{equation}
-  \textbf{w}_t^c = \text{softmax}(\beta_t K[\textbf{M}_t, \textbf{k}_t])
+  \textbf{w}_t^c \leftarrow \text{softmax}(\beta_t K[\textbf{M}_t, \textbf{k}_t])
 \end{equation}
 
 
@@ -505,7 +497,7 @@ content-based attention weights $\textbf{w}_t^c$, and the interpolation gate $g_
   = 1$ the current weights are used. This enables the network to blend between them based on
 the value of $g_t$.
 \begin{equation}
-  \textbf{w}_t^g = g_t \textbf{w}_t^c + (1 - g_t) \textbf{w}_{t-1}
+  \textbf{w}_t^g \leftarrow g_t \textbf{w}_t^c + (1 - g_t) \textbf{w}_{t-1}
 \end{equation}
 
 
@@ -531,7 +523,7 @@ sharpening parameter $\gamma_t \geq 1$ as input and applies a power function to 
 weights, increasing large weights and decreasing small weights. The effect of sharpening
 increases with higher values of $\gamma_t$.
 \begin{equation}
-  \textbf{w}_t(i) = \frac{\tilde{\textbf{w}}_t(i)^{\gamma_t}}{\sum_{j} \tilde{\textbf{w}}_t(j)^{\gamma_t}}
+  \textbf{w}_t(i) \leftarrow \frac{\tilde{\textbf{w}}_t(i)^{\gamma_t}}{\sum_{j} \tilde{\textbf{w}}_t(j)^{\gamma_t}}
 \end{equation}
 
 
@@ -559,7 +551,7 @@ weightings would lose precision over time.
 In this paper we have explored the architecture and operation of Recurrent Neural
 Networks, Long Short-Term Memory networks and Neural Turing Machines, focusing on their
 ability to store and retrieve information over long time scales. We looked at their
-internal structure, the back-propagation algorithm used to train them, the problem of
+internal structure, the backpropagation algorithm used to train them, the problem of
 long-term dependencies in standard RNNs, and introduced LSTMs as a solution to this
 problem. We also discussed the architecture of LSTMs and their variants and introduced the
 Neural Turing Machine built on top of the LSTM architecture. The results of experiments
