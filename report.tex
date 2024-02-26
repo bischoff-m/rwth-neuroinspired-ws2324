@@ -1,5 +1,6 @@
 \documentclass{article}
 
+\usepackage[margin=1.5in]{geometry}
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb}
@@ -13,6 +14,8 @@
 % - Add references
 % - Replace repeated text like "This allows the network ..."
 % - Shorten descriptions of figures
+% - Check that there are no single-line paragraphs
+% - Check formulas for correctness
 % https://www.scribbr.com/paraphrasing-tool/
 % https://quillbot.com/?gspk=cmljaGFyZG1lZXV3c2VuNDkyMQ&gsxid=ZdcTN1uLPa5o&pscd=try.quillbot.com
 
@@ -57,10 +60,10 @@ Neural Networks (RNNs) have revolutionized the processing of sequential data, en
 tasks such as language modeling \cite{merity2017regularizing}, machine translation
 \cite{choLearningPhraseRepresentations2014}, and speech recognition
 \cite{graves2013speech}. In this paper, we explore the architecture and operation of RNNs,
-with a focus on Long Short-Term Memory (LSTM) networks, which are designed to learn
-long-term dependencies more effectively than standard RNNs. We also discuss the Neural
-Turing Machine (NTM), which is a type of recurrent neural network that is augmented with
-an external memory bank.
+with a focus on Long Short-Term Memory networks, which are designed to learn long-term
+dependencies more effectively than standard RNNs. We also discuss the Neural Turing
+Machine, which is a type of recurrent neural network that is augmented with an external
+memory bank.
 
 
 \subsection{Feedforward Neural Networks}
@@ -93,7 +96,7 @@ these limitations, we turn to Recurrent Neural Networks.
 \section{Recurrent Neural Networks}
 \label{ch:2}
 
-Recurrent Neural Networks (RNNs) are a class of neural networks that are designed to
+Recurrent Neural Networks are a class of neural networks that are designed to
 handle sequential data by maintaining an internal state. Unlike feedforward neural
 networks, which process the entire input at once, RNNs process the input elements
 one at a time, allowing them to capture dependencies over time.
@@ -146,8 +149,6 @@ video classification, the output is generated simultaneously with the input, all
 network to use the previous frames as context. This demonstrates the flexibility of RNNs
 in handling a wide range of tasks involving sequential data.
 
-% Possible extensions: Sequential processing in absence of sequences
-
 
 \subsection{Internal Structure}
 \label{sec:2.1}
@@ -155,28 +156,21 @@ in handling a wide range of tasks involving sequential data.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.9\textwidth]{Block Diagram Feedforward.drawio.png}
-  \caption{The internal structure of a feedforward neural network with a single layer. The
-    input vector $x$ is transformed by a linear transformation $Wx + b$ and then passed
-    through an activation function. The output can, for example, be processed with another
-    linear transformation and a softmax function to produce a probability distribution
-    over classes. The vector $y$ is the output of the network. In a multi-layer network,
-    the components in the green box would be repeated for each layer.}
+  \caption{The internal structure of a feedforward neural network with a single layer (in
+    green) and an example for output processing.}
   \label{fig:internal-feedforward}
 \end{figure}
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.9\textwidth]{Block Diagram RNN.drawio.png}
-  \caption{The internal structure of a recurrent neural network with a single layer. The
-    input vector $x$ and the previous state vector $h_{t-1}$ are concatenated and
-    transformed by a linear transformation and an activation function to produce the new
-    state vector $h_t$. To produce the output vector $y_t$, the state vector can, for
-    example, be transformed by another linear transformation and a softmax function.}
+  \caption{The internal structure of a recurrent neural network with a single layer (in
+    green) and an example for output processing.}
   \label{fig:internal-rnn}
 \end{figure}
 
-To understand the internal structure of an RNN, we compare a single layer feedforward NN
-with a single layer RNN. As shown in \reffig{fig:internal-feedforward}, a feedforward NN
+To understand the structure of an RNN, we compare a single layer feedforward NN with a
+single layer RNN. As shown in \reffig{fig:internal-feedforward}, a feedforward NN
 transforms the input vector $x$ by a linear transformation and an activation function to
 produce the output of a single layer. In contrast, as shown in \reffig{fig:internal-rnn},
 an RNN first concatenates the input vector $x$ with the previous state vector $h_{t-1}$,
@@ -191,7 +185,6 @@ performance of the network in some cases
 \subsection{Backpropagation}
 \label{sec:2.2}
 
-% First, introduce regular backpropagation
 The training of RNNs is typically performed using the backpropagation through time (BPTT)
 algorithm, which is an extension of the backpropagation algorithm used to train
 feedforward neural networks. As an example, consider a single layer feedforward NN, like
@@ -223,28 +216,25 @@ minimizes the loss: $W \leftarrow W - \alpha \frac{\partial L}{\partial W}$ and 
   \leftarrow b - \alpha \frac{\partial L}{\partial b}$, where $\alpha$ is the learning rate.
 This is usually done using an optimization algorithm such as stochastic gradient descent.
 
-% Then, explain how BPTT differs
 The BPTT algorithm extends this approach to RNNs by unrolling the network into a sequence
-of interconnected layers, as shown in \reffig{fig:rnn-unrolled}. The forward pass is
-performed as usual, with the output of each time step serving as the input to the next
-time step. The backward pass then accumulates the gradients over the entire sequence and
-updates the weights and biases accordingly. This allows the network to capture the
-dependencies between the input elements and learn from the entire sequence, rather than
-just the current input. The key difference between BPTT and regular backpropagation is
-that the weights of the RNN are shared across time steps, meaning that the same weights
-are used at each time step. Also, the number of time steps is not given by the number of
-layers, but by the length of the input sequence. For long sequences, this can lead to
-problems such as vanishing or exploding gradients, which can make training difficult.
+of connected layers. The forward pass is performed as usual, with the output of each time
+step serving as the input to the next time step. The backward pass then accumulates the
+gradients over the entire sequence and updates the weights and biases accordingly. This
+allows the network to capture the dependencies between the input elements and learn from
+the entire sequence, rather than just the current input. The key difference between BPTT
+and regular backpropagation is that the weights of the RNN are shared across time steps
+and the number of steps is not given by the number of layers, but by the length of the
+input sequence. For long sequences, this can lead to problems such as vanishing or
+exploding gradients, which can make training difficult \cite{Bengio1994}.
 
 
 \subsection{The Problem of Long-Term Dependencies}
 \label{sec:2.3}
 
 One of the key challenges in training RNNs is the problem of long-term dependencies. To
-illustrate this, consider a simplified RNN \cite{pascanuDifficultyTrainingRecurrent2013}
-that takes an input sequence $x_0, x_1, \ldots, x_n$ and produces a sequence of
-outputs/hidden states $h_0, h_1, \ldots, h_n$. It is defined by the function $F$ for each
-time step $t \in \{0, 1, \ldots, n\}$:
+illustrate this, consider a simplified RNN that takes an input sequence $x_0, x_1, \ldots,
+  x_n$ and produces a sequence of outputs/hidden states $h_0, h_1, \ldots, h_n$. It is
+defined by the function $F$ for each time step $t \in \{0, 1, \ldots, n\}$:
 \begin{equation}
   h_t = F(h_{t-1}, x_t) = W_h \tanh{h_{t-1}} + W_x x_t + b
 \end{equation}
@@ -287,15 +277,15 @@ loss function and $\epsilon$ a small constant. Then the clipped gradient $\nabla
     \epsilon \cdot \frac{\nabla_W L}{||\nabla_W L||} & \text{otherwise}
   \end{cases}
 \end{equation}
-This prevents the gradient from becoming too large, but it does not address the problem of
-vanishing gradients. Another approach is to use ReLU activation functions
+This prevents the gradient from growing indefinitely, but it does not address the problem
+of vanishing gradients. Another approach is to use ReLU activation functions
 \cite{glorotDeepSparseRectifier2010}, which have the advantage of not saturating for
 positive inputs because their derivative is 1. However, the problem of vanishing gradients
 still remains for negative inputs. Moreover, there were methods proposed to initialize the
 weights of the network in a way that prevents the gradients from vanishing or exploding
 \cite{kumar2017weight}. While these methods can mitigate the problem of long-term
 dependencies to some extent, they do not provide a complete solution. A more effective
-approach is to use Long Short-Term Memory (LSTM) networks, which were specifically
+approach is to use Long Short-Term Memory networks, which were specifically
 developed to address the problem of vanishing and exploding gradients in RNNs.
 
 
@@ -310,7 +300,7 @@ become a popular choice for a wide range of applications, including language gen
 medical diagnosis, sentiment analysis and video processing. The key idea behind LSTMs is
 the use of a memory cell, which allows the network to store and access information over
 long time scales. In this section, we explore the architecture and operation of LSTMs, as
-well as their applications and variants.
+well as some of the variants that have been developed to improve their performance.
 
 
 \subsection{Architecture}
@@ -332,21 +322,19 @@ $C_t$, which runs straight down the entire chain with only minor linear interact
 allows information to flow along the cell state unchanged, making it easy for the network
 to remember information over long time scales. The cell state is regulated by structures
 called gates, which are composed of neural network layers and pointwise operations. The
-gates allow the network to control the flow of information into and out of the cell state,
-enabling it to remember or forget information as needed.
+gates allow the network to remember or forget information as needed.
 
 
 \subsubsection{Forget Gate}
 \label{sec:3.0.0}
 
 The first step in the operation of an LSTM is to decide what information to forget from
-the cell state. This is done by a sigmoid layer called the forget gate layer, which takes
-the previous hidden state $h_{t-1}$ and the current input $x_t$ as input and outputs a
-number between $0$ and $1$ for each element in the cell state $C_{t-1}$. A value of $0$
-indicates that the corresponding element should be forgotten, while a value of $1$
-indicates that it should be retained. This allows the network to selectively forget
-information from the cell state as needed, enabling it to discard irrelevant information
-and focus on the most important elements.
+the cell state. This is done by a sigmoid layer, which takes the previous hidden state
+$h_{t-1}$ and the current input $x_t$ as input and outputs a number between $0$ and $1$
+for each element in the cell state $C_{t-1}$. A value of $0$ indicates that the
+corresponding element should be forgotten, while a value of $1$ indicates that it should
+be retained. This allows the network to discard irrelevant information and focus on the
+most important elements.
 \begin{equation}
   f_t = \sigma(W_f \cdot [h_{t-1}, x_t] + b_f)
 \end{equation}
@@ -356,12 +344,11 @@ and focus on the most important elements.
 \label{sec:3.0.1}
 
 The next step is to decide what new information to store in the cell state. This has two
-parts. First, a sigmoid layer called the input gate layer decides which values to update.
-Next, a tanh layer creates a vector of new candidate values $\tilde{C}_t$ that could be
-added to the state. The input gate layer outputs a number between $0$ and $1$ for each
-element in the cell state, indicating how much of the new candidate values should be added
-to the state. This allows the network to selectively update the cell state with new
-information, enabling it to incorporate relevant information from the current input.
+parts. First, a sigmoid layer decides which values to update. Next, a tanh layer creates a
+vector of new candidate values $\tilde{C}_t$ that could be added to the state. The input
+gate layer outputs a number between $0$ and $1$ for each element in the cell state,
+indicating how much of the new candidate values should be added to the state. This allows
+the network to selectively update the cell state with new information.
 \begin{align}
   i_t         & = \sigma(W_i \cdot [h_{t-1}, x_t] + b_i) \\
   \tilde{C}_t & = \tanh(W_C \cdot [h_{t-1}, x_t] + b_C)
@@ -371,11 +358,10 @@ information, enabling it to incorporate relevant information from the current in
 \subsubsection{Update Cell State}
 \label{sec:3.0.2}
 
-The next step is to update the old cell state $C_{t-1}$ into the new cell state $C_t$. The
-previous steps have already decided what to do, so the network just needs to actually do
-it. First, the old state is multiplied by the forget gate $f_t$, forgetting the things
-that were decided to forget earlier. Then, the new candidate values $\tilde{C}_t$ are added
-to the state, scaled by how much the input gate decided to update each state value.
+The next step is to update the old cell state $C_{t-1}$ into the new cell state $C_t$.
+First, the old state is multiplied by the forget gate $f_t$, forgetting the things that
+were decided to forget earlier. Then, the new candidate values $\tilde{C}_t$ are added to
+the state, scaled by how much the input gate decided to update each state value.
 \begin{equation}
   C_t = f_t \cdot C_{t-1} + i_t \cdot \tilde{C}_t
 \end{equation}
@@ -385,12 +371,11 @@ to the state, scaled by how much the input gate decided to update each state val
 \label{sec:3.0.3}
 
 Finally, the network needs to decide what to output. This output will be based on the cell
-state, but will be a filtered version. First, a sigmoid layer called the output gate layer
-decides what parts of the cell state should be output. Then, the cell state is put through
-a tanh function to push the values to be between $-1$ and $1$, and multiplied by the
-output of the sigmoid gate. The result is the output of the network at the current time
-step $h_t$, which can be used for further processing or as the final output of the
-network.
+state, but will be a filtered version. First, a sigmoid layer decides what parts of the
+cell state should be output. Then, the cell state is put through a tanh function to push
+the values to be between $-1$ and $1$, and multiplied by the output of the sigmoid gate.
+The result is the output of the network at the current time step $h_t$, which can be used
+for further processing or as the final output of the network.
 \begin{align}
   o_t & = \sigma(W_o \cdot [h_{t-1}, x_t] + b_o) \\
   h_t & = o_t \cdot \tanh(C_t)
@@ -400,6 +385,7 @@ network.
 \subsection{Variants}
 \label{sec:3.1}
 
+% Variant: Peephole Connections
 LSTMs have been the subject of extensive research, leading to the development of several
 variants that aim to improve their performance and address specific challenges
 \cite{greffLSTMSearchSpace2017}. One popular variant, introduced by Gers and Schmidhuber
@@ -415,11 +401,10 @@ Another variant, called Dynamic Cortex Memory (DCM), was introduced by Otte et a
 \cite{otte2014dynamic}. The DCM is an extension of the LSTM model that enhances the inner
 interplay of the gates and the error carousel due to several new and trainable
 connections. These connections enable a direct signal transfer from the gates to one
-another, allowing the network to converge faster during training with backpropagation
-through time (BPTT) than LSTM under the same training conditions. Furthermore, DCMs yield
-better generalization results than LSTMs, as shown for different supervised problem
-scenarios, including storing precise values, adding, and learning a context-sensitive
-grammar.
+another, allowing the network to converge faster during training than LSTM under the same
+training conditions. Furthermore, DCMs yield better generalization results than LSTMs, as
+shown for different supervised problem scenarios, including storing precise values,
+adding, and learning a context-sensitive grammar.
 
 % Variant: Gated Recurrent Unit
 
@@ -444,25 +429,24 @@ applications.
 \section{Neural Turing Machines}
 \label{ch:4}
 
-% Maybe add: The algorithm combines both content-based addressing and location-based addressing
-
 While LSTMs and their variants have proven to be effective for a wide range of tasks, they
 are still limited in their ability to perform complex operations that require explicit
 memory access. To address this limitation, Graves et al. introduced the Neural Turing
-Machine (NTM) in 2014 \cite{gravesNeuralTuringMachines2014}. The NTM is a type of
-recurrent neural network that is augmented with an external memory bank, allowing it to
-perform complex operations that require explicit memory access.
+Machine (NTM) in 2014 \cite{gravesNeuralTuringMachines2014}. The NTM is augmented with an
+external memory bank to combine the power of neural networks with the ability to store and
+retrieve information. Unlike the operations on the memory of a computer, the operations of
+the NTM are designed to be fully differentiable, to be trained using backpropagation and
+gradient-based optimization algorithms.
 
-The idea behind the NTM is to combine the power of neural networks with the ability to
-store and retrieve information from an external memory bank. The approach is inspired by
-the structure and operation of a Turing machine, which is a theoretical model of a
-computer that can read from and write to an infinite tape of memory. A computer program
-makes use of three fundamental mechanisms: elementary operations (e.g., arithmetic
-operations), logical flow control (branching), and external memory, which can be written
-to and read from in the course of computation \cite{von_neumann_first_1945}. In human
-cognition, the process that shares the most similarity to algorithmic operation is known
-as working memory, which is understood to mean a capacity for short-term storage of
-information and its rule-based manipulation \cite{baddeley_memory_2009}.
+The approach is inspired by the structure and operation of a Turing machine, which is a
+theoretical model of a computer that can read from and write to an infinite tape of
+memory. A computer program makes use of three fundamental mechanisms: elementary
+operations (e.g., arithmetic operations), logical flow control (branching), and external
+memory, which can be written to and read from in the course of computation
+\cite{von_neumann_first_1945}. In human cognition, the process that shares the most
+similarity to algorithmic operation is known as working memory, which is understood to
+mean a capacity for short-term storage of information and its rule-based manipulation
+\cite{baddeley_memory_2009}.
 
 
 
@@ -476,21 +460,15 @@ information and its rule-based manipulation \cite{baddeley_memory_2009}.
   \label{fig:ntm-structure}
 \end{figure}
 
-The architecture of an NTM is shown in \reffig{fig:ntm-structure}. The NTM consists of two
-main components: a controller and a memory bank. The controller is an LSTM, which is
+The architecture of an NTM, as shown in \reffig{fig:ntm-structure}, consists of two main
+components: a controller and a memory bank. The controller is an LSTM, which is
 responsible for processing the input data and interacting with the memory bank. The memory
 bank for time step $t$ is a matrix $\textbf{M}_t$ of size $N \times M$, where $N$ is the
 number of memory locations and $M$ is the size of each memory location. The memory bank
-can be read from and written to by the controller, allowing the network to store and
-retrieve information as needed.
-
-A key aspect of the NTM is that each operation of the NTM is differentiable, meaning that
-it can be trained using backpropagation like a standard neural network. The controller
-interacts with the memory bank using two main mechanisms: read heads and write heads,
-which are responsible for reading and writing information from and to the memory bank,
-respectively. The read and write heads use an attention mechanism to select the memory
-locations to read from and write to, allowing the network to focus on the most relevant
-information.
+can be read from and written to by the controller. It interacts with the memory bank using
+read heads and write heads, which are responsible for reading and writing information from
+and to the memory bank. They use an attention mechanism to select the memory locations,
+allowing the network to focus on specific parts of the memory.
 
 
 \subsection{Addressing Mechanism}
@@ -505,7 +483,8 @@ information.
 \end{figure}
 
 The addressing mechanism of an NTM is responsible for selecting the memory locations to
-read from and write to. It consists of four main steps: content addressing, interpolation,
+read from and write to. It combines both content-based addressing and location-based
+addressing and consists of four main steps: content addressing, interpolation,
 convolutional shift, and sharpening, as shown in \reffig{fig:ntm-addressing}. The
 addressing mechanism is performed at each time step, allowing the controller to interact
 with the memory bank in a dynamic and flexible manner.
@@ -514,13 +493,12 @@ with the memory bank in a dynamic and flexible manner.
 \subsubsection{Content Addressing}
 \label{sec:4.1.0}
 
-The first step of the addressing mechanism is content addressing, which is responsible for
-selecting the memory locations to read from and write to based on the content of the
-memory. It takes the current memory bank $\textbf{M}_t$, the key vector $\textbf{k}_t$,
-and the key strength $\beta_t$ as input. The key vector is used to calculate the
-similarity between the key and each memory location using the cosine similarity measure
-$K[\cdot, \cdot]$. The parameter $\beta_t$ amplifies the precision of the attention
-weights, enforcing high sparsity in the weights.
+The first step of the addressing mechanism is content addressing, which selects memory
+locations based on the content of the cells. It takes the current memory bank
+$\textbf{M}_t$, the key vector $\textbf{k}_t$, and the key strength $\beta_t$ as input.
+The key vector is used to calculate the similarity between the key and each memory
+location using the cosine similarity measure $K[\cdot, \cdot]$. The parameter $\beta_t$
+amplifies the precision of the attention weights, enforcing high sparsity in the weights.
 \begin{equation}
   \textbf{w}_t^c = \text{softmax}(\beta_t K[\textbf{M}_t, \textbf{k}_t])
 \end{equation}
@@ -530,11 +508,11 @@ weights, enforcing high sparsity in the weights.
 \label{sec:4.1.1}
 
 The next step is interpolation, which allows the network to iteratively access subsequent
-memory locations. It takes the previous attention weights $\textbf{w}_{t-1}$, the content-based
-attention weights $\textbf{w}_t^c$, and the interpolation gate $g_t \in (0, 1)$ as input. For a
-value of $g_t = 0$, the previous attention weights are retained, while for a value of
-$g_t = 1$, the current attention weights are used. This allows the network to blend
-between the previous and current attention weights based on the value of $g_t$.
+memory locations. It takes the previous attention weights $\textbf{w}_{t-1}$, the
+content-based attention weights $\textbf{w}_t^c$, and the interpolation gate $g_t \in (0,
+  1)$ as input. For a value of $g_t = 0$, the previous weights are retained, while for a
+value of $g_t = 1$, the current weights are used. This allows the network to blend between
+them based on the value of $g_t$.
 \begin{equation}
   \textbf{w}_t^g = g_t \textbf{w}_t^c + (1 - g_t) \textbf{w}_{t-1}
 \end{equation}
@@ -544,10 +522,10 @@ between the previous and current attention weights based on the value of $g_t$.
 \label{sec:4.1.2}
 
 After interpolation, each head produces a shift weighting $\textbf{s}_t$ that is used as
-the kernel for a convolutional shift operation. This operation convolves the new attention
-weights with the kernel $\textbf{s}_t$, allowing the network to shift the attention if
-needed. This is useful for accessing memory locations in a flexible and dynamic manner.
-All indices are modulo $N$ to ensure that the shift operation is circular.
+the kernel for a convolutional shift operation. It convolves the new attention weights
+with the kernel $\textbf{s}_t$, allowing the network to shift the attention if needed.
+This is useful for accessing memory locations in a flexible and dynamic manner. All
+indices are modulo $N$ to ensure that the shift operation is circular.
 \begin{equation}
   \tilde{\textbf{w}}_t(i) \leftarrow \sum_{j=0}^{N-1} \textbf{w}_t^g(j) \textbf{s}_t(i-j)
 \end{equation}
@@ -559,7 +537,7 @@ All indices are modulo $N$ to ensure that the shift operation is circular.
 The final step of the addressing mechanism is sharpening, which amplifies the focus of the
 attention weights. It takes the convolved attention weights $\tilde{\textbf{w}}_t$ and the
 sharpening parameter $\gamma_t \geq 1$ as input and applies a power function to the
-weights, making large weights larger and small weights smaller. The effect of sharpening
+weights, increasing large weights and decreasing small weights. The effect of sharpening
 increases with higher values of $\gamma_t$.
 \begin{equation}
   \textbf{w}_t(i) = \frac{\tilde{\textbf{w}}_t(i)^{\gamma_t}}{\sum_{j} \tilde{\textbf{w}}_t(j)^{\gamma_t}}
@@ -569,41 +547,37 @@ increases with higher values of $\gamma_t$.
 \subsection{Comparison with LSTMs}
 \label{sec:4.2}
 
-The NTM was designed to address the limitations of LSTMs in performing complex operations
-that require explicit memory access. To compare the performance of the NTM with LSTMs,
-Graves et al. conducted a series of experiments on a set of simple algorithmic tasks such
-as copying and sorting data sequences. The goal was to establish that the NTM is able to
-solve the problems and that it is able to do so by learning compact internal programs. The
-hallmark of such solutions is that they generalize well beyond the range of the training
-data. For example, the researchers were curious to see if a network that had been trained
-to copy sequences of length up to 20 could copy a sequence of length 100 with no further
-training. The results of the experiments showed that the NTM was able to learn much faster
-than LSTMs and converged to a lower cost. Additionally, the NTM was able to generalize
-well beyond the range of the training data, while LSTMs rapidly degraded beyond length 20.
-This suggests that the NTM, unlike LSTMs, has learned some form of copy algorithm. The
-researchers also examined the interaction between the controller and the memory and
-concluded that the NTM has learned how to create and iterate through arrays. The algorithm
-combines both content-based addressing and location-based addressing, and the iteration
-would not generalize to long sequences without the ability to use relative shifts from the
-previous read and write weightings. The focus-sharpening mechanism was also found to be
-essential, as the weightings would lose precision over time without it.
+To compare the performance of the NTM with LSTMs, Graves et al. conducted a series of
+experiments on a set of simple algorithmic tasks such as copying and sorting data
+sequences. The goal was to establish that the NTM is able to solve the problems by
+learning compact internal programs. The hallmark of such solutions is that they generalize
+well beyond the range of the training data. For example, the researchers examined if a
+network that had been trained to copy sequences of length up to 20 could copy a sequence
+of length up to 120 with no further training. The results of the experiments showed that
+the NTM was able to learn much faster than LSTMs and converged to a lower cost.
+Additionally, the NTM was able to generalize well beyond the range of the training data,
+while LSTMs rapidly degraded beyond length 20. This suggests that the NTM, unlike LSTMs,
+has learned some form of copy algorithm. The researchers also examined the interaction
+between the controller and the memory and concluded that the NTM has learned how to create
+and iterate through arrays. The focus-sharpening mechanism was also found to be essential,
+as the weightings would lose precision over time without it.
 
 
 \section{Conclusion}
 \label{ch:5}
 
 In this paper, we have explored the architecture and operation of Recurrent Neural
-Networks, Long Short-Term Memory (LSTM) networks and Neural Turing Machines (NTMs),
-focusing on their ability to store and retrieve information over long time scales. We
-addressed their internal structure, the backpropagation algorithm used to train them, the
-problem of long-term dependencies in standard RNNs and introduced LSTMs as a solution to
-this problem. We also discussed the architecture of LSTMs and their variants and
-introduced the Neural Turing Machine built on top of the LSTM architecture. The results of
-experiments comparing the performance of LSTMs and NTMs on a set of simple algorithmic
-tasks were presented, showing that the NTM was able to learn these specific tasks much
-faster than LSTMs and converged to a lower cost. All in all, the field of RNNs and their
-variants is a rapidly evolving area of research, and we expect to see many more exciting
-developments in the future.
+Networks, Long Short-Term Memory networks and Neural Turing Machines, focusing on their
+ability to store and retrieve information over long time scales. We addressed their
+internal structure, the backpropagation algorithm used to train them, the problem of
+long-term dependencies in standard RNNs and introduced LSTMs as a solution to this
+problem. We also discussed the architecture of LSTMs and their variants and introduced the
+Neural Turing Machine built on top of the LSTM architecture. The results of experiments
+comparing the performance of LSTMs and NTMs on a set of simple algorithmic tasks were
+presented, showing that the NTM was able to learn these specific tasks much faster than
+LSTMs and converged to a lower cost. All in all, the field of RNNs and their variants is a
+rapidly evolving area of research, and we expect to see many more exciting developments in
+the future.
 
 
 
